@@ -34,6 +34,9 @@
 | created_at | TIMESTAMP   | Да           | Дата зачисления, auto                |
 | updated_at | TIMESTAMP   | Да           | Дата обновления, auto                |
 
+### Связи 
+* `user_id` -> ссылается на `User(id)`
+
 ## MentorProfile
 
 Описание: Профиль ментора, расширяющий базового пользователя. Определяет, что пользователь, может проверять домашние задания и вести потоки.
@@ -47,6 +50,9 @@
 | user_id    | UUID      | Да           | Ссылка на пользователя (FK, UNIQUE) |
 | created_at | TIMESTAMP | Да           | Дата назначения ментором, auto      |
 | updated_at | TIMESTAMP | Да           | Дата обновления ментором, auto      |
+
+### Связи 
+* `user_id` -> ссылается на `User(id)`
 
 ## Course
 
@@ -80,6 +86,10 @@
 | created_at | TIMESTAMP    | Да           | Дата создания потока, auto                |
 | updated_at | TIMESTAMP    | Да           | Дата обновления потока, auto              |
 
+### Связи 
+* `course_id` -> ссылается на `Course(id)`
+* `mentor_id` -> ссылается на `MentorProfile(id)`
+
 ## StreamStudent
 
 Описание: Связующая таблица между студентами и потоком (M:N).
@@ -91,6 +101,10 @@
 | stream_id  | UUID      | Да           | Ссылка на поток (PK, FK)       |
 | student_id | UUID      | Да           | Ссылка на студента (PK, FK)    |
 | joined_at  | TIMESTAMP | Да           | Дата добавления в группу, auto |
+
+### Связи 
+* `stream_id` -> ссылается на `Stream(id)`
+* `student_id` -> ссылается на `StudentProfile(id)`
 
 ## Task
 
@@ -109,6 +123,9 @@
 | created_at    | TIMESTAMP    | Да           | Дата публикации, auto                 |
 | updated_at    | TIMESTAMP    | Да           | Дата обновления задания, auto         |
 
+### Связи 
+* `stream_id` -> ссылается на `Stream(id)`
+
 ## Submission
 
 Описание: Сданное домашнее задание. Фиксирует ссылку на репозиторий или PR, а также текущий статус прохождения ревью (новая, на проверке, требует доработки, зачтена, пересдана, архивная).
@@ -126,6 +143,10 @@
 | created_at  | TIMESTAMP    | Да           | Время первой сдачи, auto                                                    |
 | updated_at  | TIMESTAMP    | Да           | Время обновления, auto                                                      |
 
+### Связи 
+* `task_id` -> ссылается на `Task(id)`
+* `student_id` -> ссылается на `StudentProfile(id)`
+
 ## Review
 
 Описание: Результат проверка домашнего задания ментором. Содержит оценку в баллах, текстовый комментарий и временную метку.
@@ -141,6 +162,10 @@
 | score         | INTEGER   | Да           | Баллы за работу (0–100)   |
 | comment       | TEXT      | Да           | Комментарий ментора       |
 | reviewed_at   | TIMESTAMP | Да           | Время проверки            |
+
+### Связи 
+* `submission_id` -> ссылается на `Submission(id)`
+* `mentor_id` -> ссылается на `MentorProfile(id)`
 
 ## Lesson
 
@@ -159,6 +184,9 @@
 | record_link  | VARCHAR(255) | Нет          | Ссылка на запись и материалы     |
 | created_at   | TIMESTAMP    | Да           | Дата создания записи, auto       |
 | updated_at   | TIMESTAMP    | Да           | Время изменения записи, auto     |
+
+### Связи 
+* `stream_id` -> ссылается на `Stream(id)`
 
 ## Lead
 
@@ -184,6 +212,9 @@
 | created_at  | TIMESTAMP    | Да           | Дата поступления заявки, auto                                        |
 | updated_at  | TIMESTAMP    | Да           | Дата онбовления заявки, auto                                         |
 
+### Связи 
+* `manager_id` -> ссылается на `User(id)`
+
 ## Notification
 
 Описание: Системное уведомление. Отправляемом пользователю (telegram, email или внутри платформы). Поддерживает отложенную отправку, тихий режим и отслеживаение статуса доставки и прочтения.
@@ -202,7 +233,8 @@
 | created_at | TIMESTAMP   | Да           | Дата создания записи, auto                      |
 | updated_at | TIMESTAMP   | Да           | Дата изменения записи, auto                     |
 
-
+### Связи 
+* `user_id` -> ссылается на `User(id)`
 
 ## Вопросы для самопроверки
 
