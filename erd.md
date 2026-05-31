@@ -22,9 +22,9 @@ erDiagram
         VARCHAR(100) first_name
         VARCHAR(100) last_name
         VARCHAR(100) patronymic
-        VARCHAR(255) email UK
+        VARCHAR(255) email "U"
         VARCHAR(255) password_hash
-        VARCHAR(100) tg_id UK
+        VARCHAR(100) tg_id "U"
         VARCHAR(100) tg_username
         ROLES role "ENUM: ADMIN|MANAGER|MENTOR|STUDENT"
         BOOLEAN is_activated
@@ -46,14 +46,14 @@ erDiagram
 
     MENTOR_PROFILE {
         UUID id PK
-        UUID user_id UK FK
+        UUID user_id FK "U"
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
 
     STUDENT_PROFILE {
         UUID id PK
-        UUID user_id UK FK
+        UUID user_id FK "U"
         TIMESTAMP created_at
         TIMESTAMP updated_at
     }
@@ -97,8 +97,8 @@ erDiagram
     }
 
     STREAM_STUDENT {
-        UUID stream_id PK FK
-        UUID student_id PK FK
+        UUID stream_id PK "FK"
+        UUID student_id PK "FK"
         TIMESTAMP joined_at
     }
 
@@ -125,7 +125,7 @@ erDiagram
         TIMESTAMP updated_at
     }
 
-    USER ||--|{ LEAD : "пользователь управляет лидами"
+    USER ||--|{ LEAD : "пользователь(с ролью менеджера) управляет лидами"
     USER ||--|{ NOTIFICATION : "у пользователя есть уведомления"
     USER ||--o| MENTOR_PROFILE : "пользователь может быть ментором"
     USER ||--o| STUDENT_PROFILE : "пользователь может быть студентом"
