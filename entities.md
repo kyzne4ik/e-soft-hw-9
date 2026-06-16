@@ -4,20 +4,33 @@
 
 ### Поля
 
-| Поле          | Тип          | Обязательное | Описание                                                             |
-| ------------- | ------------ | ------------ | -------------------------------------------------------------------- |
-| id            | UUID         | Да           | Уникальный идентификатор (PK)                                        |
-| first_name    | VARCHAR(100) | Да           | Имя пользователя                                                     |
-| last_name     | VARCHAR(100) | Да           | Фамилия пользователя                                                 |
-| patronymic    | VARCHAR(100) | Нет          | Отчество пользователя                                                |
-| email         | VARCHAR(255) | Да           | Почта (UNIQUE, логин)                                                |
-| password_hash | VARCHAR(255) | Да           | Хэш пароля                                                           |
-| tg_id         | VARCHAR(100) | Нет          | Telegram_id для уведомлений (UNIQUE)                                 |
-| tg_username   | VARCHAR(100) | Нет          | Telegram_username для отображения в UI и поиска                      |
-| role          | VARCHAR(50)  | Да           | Роль (ADMIN, MANAGER, MENTOR, STUDENT)                               |
-| is_activated  | BOOLEAN      | Да           | Активация аккаунта (должен перейти по инвайт-ссылке), default: false |
-| created_at    | TIMESTAMP    | Да           | Дата создания, auto                                                  |
-| updated_at    | TIMESTAMP    | Да           | Дата обновления, auto                                                |
+| Поле          | Тип       | Обязательное | Описание                                                             |
+| ------------- | --------- | ------------ | -------------------------------------------------------------------- |
+| id            | INTEGER   | Да           | Уникальный идентификатор (PK)                                        |
+| first_name    | TEXT      | Да           | Имя пользователя                                                     |
+| last_name     | TEXT      | Да           | Фамилия пользователя                                                 |
+| patronymic    | TEXT      | Нет          | Отчество пользователя                                                |
+| email         | TEXT      | Да           | Почта (UNIQUE, логин)                                                |
+| password_hash | TEXT      | Да           | Хэш пароля                                                           |
+| role          | TEXT      | Да           | Роль (ADMIN, MANAGER, MENTOR, STUDENT)                               |
+| is_activated  | BOOLEAN   | Да           | Активация аккаунта (должен перейти по инвайт-ссылке), default: false |
+| created_at    | TIMESTAMP | Да           | Дата создания, auto                                                  |
+| updated_at    | TIMESTAMP | Да           | Дата обновления, auto                                                |
+
+## UserTelegram
+
+Описание: Сущность telegram-пользователя, хранящая данные из телеграмма. Используется в tg-боте
+Связан с User (1:1).
+
+### Поля
+
+| Поле        | Тип       | Обязательное | Описание                                        |
+| ----------- | --------- | ------------ | ----------------------------------------------- |
+| id          | INTEGER   | Да           | Уникальный идентификатор (PK)                   |
+| user_id     | INTEGER   | Да           | Ссылка на пользователя (FK, UNIQUE)             |
+| tg_id       | TEXT      | Нет          | Telegram_id для уведомлений (UNIQUE)            |
+| tg_username | TEXT      | Нет          | Telegram_username для отображения в UI и поиска |
+| linked_at   | TIMESTAMP | Нет          |                                                 |
 
 ## StudentProfile
 
@@ -26,16 +39,25 @@
 
 ### Поля
 
-| Поле       | Тип         | Обязательное | Описание                             |
-| ---------- | ----------- | ------------ | ------------------------------------ |
-| id         | UUID        | Да           | Уникальный идентификатор (PK)        |
-| user_id    | UUID        | Да           | Ссылка на пользователя (FK, UNIQUE)  |
-| status     | VARCHAR(50) | Да           | Статус (ACTIVE, GRADUATED, EXPELLED) |
-| created_at | TIMESTAMP   | Да           | Дата зачисления, auto                |
-| updated_at | TIMESTAMP   | Да           | Дата обновления, auto                |
+| Поле       | Тип           | Обязательное | Описание                             |
+| ---------- | ------------- | ------------ | ------------------------------------ |
+| id         | INTEGER       | Да           | Уникальный идентификатор (PK)        |
+| user_id    | INTEGER       | Да           | Ссылка на пользователя (FK, UNIQUE)  |
+| status     | StudentStatus | Да           | Статус (ACTIVE, GRADUATED, EXPELLED) |
+| created_at | TIMESTAMP     | Да           | Дата зачисления, auto                |
+| updated_at | TIMESTAMP     | Да           | Дата обновления, auto                |
 
-### Связи 
-* `user_id` -> ссылается на `User(id)`
+## **ENUM**: StudentStatus
+
+Описание: Статус студента в системе - активен, выпущен или отчислен.
+
+### Поля
+
+| Поле      |
+| --------- |
+| ACTIVE    |
+| GRADUATED |
+| EXPELLED  |
 
 ## MentorProfile
 
@@ -46,13 +68,24 @@
 
 | Поле       | Тип       | Обязательное | Описание                            |
 | ---------- | --------- | ------------ | ----------------------------------- |
-| id         | UUID      | Да           | Уникальный идентификатор (PK)       |
-| user_id    | UUID      | Да           | Ссылка на пользователя (FK, UNIQUE) |
+| id         | INTEGER   | Да           | Уникальный идентификатор (PK)       |
+| user_id    | INTEGER   | Да           | Ссылка на пользователя (FK, UNIQUE) |
 | created_at | TIMESTAMP | Да           | Дата назначения ментором, auto      |
 | updated_at | TIMESTAMP | Да           | Дата обновления ментором, auto      |
 
-### Связи 
-* `user_id` -> ссылается на `User(id)`
+## ManagerProfile
+
+Описание: Профиль менеджера, расширяющий базового пользователя. Определяет, что пользователь, может управлять crm-воронкой.
+Связан с User (1:1).
+
+### Поля
+
+| Поле       | Тип       | Обязательное | Описание                            |
+| ---------- | --------- | ------------ | ----------------------------------- |
+| id         | INTEGER   | Да           | Уникальный идентификатор (PK)       |
+| user_id    | INTEGER   | Да           | Ссылка на пользователя (FK, UNIQUE) |
+| created_at | TIMESTAMP | Да           | Дата назначения ментором, auto      |
+| updated_at | TIMESTAMP | Да           | Дата обновления ментором, auto      |
 
 ## Course
 
@@ -61,13 +94,13 @@
 
 ### Поля
 
-| Поле        | Тип          | Обязательное | Описание                      |
-| ----------- | ------------ | ------------ | ----------------------------- |
-| id          | UUID         | Да           | Уникальный идентификатор (PK) |
-| name        | VARCHAR(200) | Да           | Название курса                |
-| description | TEXT         | Нет          | Описание учебной программы    |
-| created_at  | TIMESTAMP    | Да           | Дата создания, auto           |
-| updated_at  | TIMESTAMP    | Да           | Дата обновления, auto         |
+| Поле        | Тип       | Обязательное | Описание                      |
+| ----------- | --------- | ------------ | ----------------------------- |
+| id          | INTEGER   | Да           | Уникальный идентификатор (PK) |
+| name        | TEXT      | Да           | Название курса                |
+| description | TEXT      | Нет          | Описание учебной программы    |
+| created_at  | TIMESTAMP | Да           | Дата создания, auto           |
+| updated_at  | TIMESTAMP | Да           | Дата обновления, auto         |
 
 ## Stream
 
@@ -78,17 +111,25 @@
 
 | Поле       | Тип          | Обязательное | Описание                                  |
 | ---------- | ------------ | ------------ | ----------------------------------------- |
-| id         | UUID         | Да           | Уникальный идентификатор (PK)             |
-| name       | VARCHAR(100) | Да           | Название потока (например, "ШП-2027")     |
-| course_id  | UUID         | Да           | Ссылка на курс (FK)                       |
-| mentor_id  | UUID         | Да           | Закрепленный ментор (FK к MentorProfile)  |
-| status     | VARCHAR(50)  | Да           | Статус (ENROLLING, IN_PROGRESS, FINISHED) |
+| id         | INTEGER      | Да           | Уникальный идентификатор (PK)             |
+| name       | TEXT         | Да           | Название потока (например, "ШП-2027")     |
+| course_id  | INTEGER      | Да           | Ссылка на курс (FK)                       |
+| mentor_id  | INTEGER      | Да           | Закрепленный ментор (FK к MentorProfile)  |
+| status     | StreamStatus | Да           | Статус (ENROLLING, IN_PROGRESS, FINISHED) |
 | created_at | TIMESTAMP    | Да           | Дата создания потока, auto                |
 | updated_at | TIMESTAMP    | Да           | Дата обновления потока, auto              |
 
-### Связи 
-* `course_id` -> ссылается на `Course(id)`
-* `mentor_id` -> ссылается на `MentorProfile(id)`
+## **ENUM**: StreamStatus
+
+Описание: Статус жизненного цикла учебного потока - от набора студентов до завершения.
+
+### Поля
+
+| Поле        |
+| ----------- |
+| ENROLLING   |
+| IN_PROGRESS |
+| FINISHED    |
 
 ## StreamStudent
 
@@ -98,13 +139,9 @@
 
 | Поле       | Тип       | Обязательное | Описание                       |
 | ---------- | --------- | ------------ | ------------------------------ |
-| stream_id  | UUID      | Да           | Ссылка на поток (PK, FK)       |
-| student_id | UUID      | Да           | Ссылка на студента (PK, FK)    |
+| stream_id  | INTEGER   | Да           | Ссылка на поток (PK, FK)       |
+| student_id | INTEGER   | Да           | Ссылка на студента (PK, FK)    |
 | joined_at  | TIMESTAMP | Да           | Дата добавления в группу, auto |
-
-### Связи 
-* `stream_id` -> ссылается на `Stream(id)`
-* `student_id` -> ссылается на `StudentProfile(id)`
 
 ## Task
 
@@ -112,19 +149,16 @@
 
 ### Поля
 
-| Поле          | Тип          | Обязательное | Описание                              |
-| ------------- | ------------ | ------------ | ------------------------------------- |
-| id            | UUID         | Да           | Уникальный идентификатор (PK)         |
-| stream_id     | UUID         | Да           | Для какого потока создано (FK)        |
-| title         | VARCHAR(200) | Да           | Тема задания                          |
-| description   | TEXT         | Да           | Подробное описание / ТЗ               |
-| repo_template | VARCHAR(255) | Да           | Ссылка на GitHub-репозиторий (шаблон) |
-| deadline      | TIMESTAMP    | Да           | Дедлайн сдачи                         |
-| created_at    | TIMESTAMP    | Да           | Дата публикации, auto                 |
-| updated_at    | TIMESTAMP    | Да           | Дата обновления задания, auto         |
-
-### Связи 
-* `stream_id` -> ссылается на `Stream(id)`
+| Поле          | Тип       | Обязательное | Описание                              |
+| ------------- | --------- | ------------ | ------------------------------------- |
+| id            | INTEGER   | Да           | Уникальный идентификатор (PK)         |
+| stream_id     | INTEGER   | Да           | Для какого потока создано (FK)        |
+| title         | TEXT      | Да           | Тема задания                          |
+| description   | TEXT      | Да           | Подробное описание / ТЗ               |
+| repo_template | TEXT      | Да           | Ссылка на GitHub-репозиторий (шаблон) |
+| deadline      | TIMESTAMP | Да           | Дедлайн сдачи                         |
+| created_at    | TIMESTAMP | Да           | Дата публикации, auto                 |
+| updated_at    | TIMESTAMP | Да           | Дата обновления задания, auto         |
 
 ## Submission
 
@@ -132,20 +166,31 @@
 
 ### Поля
 
-| Поле        | Тип          | Обязательное | Описание                                                                    |
-| ----------- | ------------ | ------------ | --------------------------------------------------------------------------- |
-| id          | UUID         | Да           | Уникальный идентификатор (PK)                                               |
-| task_id     | UUID         | Да           | Ссылка на задание (FK)                                                      |
-| student_id  | UUID         | Да           | Ссылка на профиль студента (FK)                                             |
-| repo_link   | VARCHAR(255) | Да           | Ссылка на PR/Репозиторий студента                                           |
-| status      | VARCHAR(50)  | Да           | Статус (NEW, REVIEWING, CHANGES_REQUESTED, ACCEPTED, RESUBMITTED, ARCHIVED) |
-| is_activate | BOOLEAN      | Да           | Актуальна ли сдача (false для отчисленных/архивных), default: true          |
-| created_at  | TIMESTAMP    | Да           | Время первой сдачи, auto                                                    |
-| updated_at  | TIMESTAMP    | Да           | Время обновления, auto                                                      |
+| Поле        | Тип              | Обязательное | Описание                                                                    |
+| ----------- | ---------------- | ------------ | --------------------------------------------------------------------------- |
+| id          | INTEGER          | Да           | Уникальный идентификатор (PK)                                               |
+| task_id     | INTEGER          | Да           | Ссылка на задание (FK)                                                      |
+| student_id  | INTEGER          | Да           | Ссылка на профиль студента (FK)                                             |
+| repo_link   | TEXT             | Да           | Ссылка на PR/Репозиторий студента                                           |
+| status      | SubmissionStatus | Да           | Статус (NEW, REVIEWING, CHANGES_REQUESTED, ACCEPTED, RESUBMITTED, ARCHIVED) |
+| is_activate | BOOLEAN          | Да           | Актуальна ли сдача (false для отчисленных/архивных), default: true          |
+| created_at  | TIMESTAMP        | Да           | Время первой сдачи, auto                                                    |
+| updated_at  | TIMESTAMP        | Да           | Время обновления, auto                                                      |
 
-### Связи 
-* `task_id` -> ссылается на `Task(id)`
-* `student_id` -> ссылается на `StudentProfile(id)`
+## **ENUM**: SubmissionStatus
+
+Описание: Статус прохождения домашнего задания через цикл код-ревью.
+
+### Поля
+
+| Поле              |
+| ----------------- |
+| NEW               |
+| REVIEWING         |
+| CHANGES_REQUESTED |
+| ACCEPTED          |
+| RESUBMITTED       |
+| ARCHIVED          |
 
 ## Review
 
@@ -156,16 +201,12 @@
 
 | Поле          | Тип       | Обязательное | Описание                  |
 | ------------- | --------- | ------------ | ------------------------- |
-| id            | UUID      | Да           | PK                        |
-| submission_id | UUID      | Да           | Ссылка на сдачу (FK)      |
-| mentor_id     | UUID      | Да           | Кто проверял (FK на User) |
+| id            | INTEGER   | Да           | PK                        |
+| submission_id | INTEGER   | Да           | Ссылка на сдачу (FK)      |
+| mentor_id     | INTEGER   | Да           | Кто проверял (FK на User) |
 | score         | INTEGER   | Да           | Баллы за работу (0–100)   |
 | comment       | TEXT      | Да           | Комментарий ментора       |
 | reviewed_at   | TIMESTAMP | Да           | Время проверки            |
-
-### Связи 
-* `submission_id` -> ссылается на `Submission(id)`
-* `mentor_id` -> ссылается на `MentorProfile(id)`
 
 ## Lesson
 
@@ -173,20 +214,17 @@
 
 ### Поля
 
-| Поле         | Тип          | Обязательное | Описание                         |
-| ------------ | ------------ | ------------ | -------------------------------- |
-| id           | UUID         | Да           | Уникальный идентификатор (PK)    |
-| stream_id    | UUID         | Да           | Для какого потока (FK)           |
-| title        | VARCHAR(200) | Да           | Тема лекции                      |
-| start_time   | TIMESTAMP    | Да           | Дата и время начала              |
-| end_time     | TIMESTAMP    | Да           | Время завершения                 |
-| meeting_link | VARCHAR(255) | Нет          | Ссылка на трансляцию (Zoom/Meet) |
-| record_link  | VARCHAR(255) | Нет          | Ссылка на запись и материалы     |
-| created_at   | TIMESTAMP    | Да           | Дата создания записи, auto       |
-| updated_at   | TIMESTAMP    | Да           | Время изменения записи, auto     |
-
-### Связи 
-* `stream_id` -> ссылается на `Stream(id)`
+| Поле         | Тип       | Обязательное | Описание                         |
+| ------------ | --------- | ------------ | -------------------------------- |
+| id           | INTEGER   | Да           | Уникальный идентификатор (PK)    |
+| stream_id    | INTEGER   | Да           | Для какого потока (FK)           |
+| title        | TEXT      | Да           | Тема лекции                      |
+| start_time   | TIMESTAMP | Да           | Дата и время начала              |
+| end_time     | TIMESTAMP | Да           | Время завершения                 |
+| meeting_link | TEXT      | Нет          | Ссылка на трансляцию (Zoom/Meet) |
+| record_link  | TEXT      | Нет          | Ссылка на запись и материалы     |
+| created_at   | TIMESTAMP | Да           | Дата создания записи, auto       |
+| updated_at   | TIMESTAMP | Да           | Время изменения записи, auto     |
 
 ## Lead
 
@@ -196,24 +234,38 @@
 
 ### Поля
 
-| Поле        | Тип          | Обязательное | Описание                                                             |
-| ----------- | ------------ | ------------ | -------------------------------------------------------------------- |
-| id          | UUID         | Да           | Уникальный идентификатор (PK)                                        |
-| first_name  | VARCHAR(100) | Да           | Имя кандидата                                                        |
-| last_name   | VARCHAR(100) | Да           | Фамилия кандидата                                                    |
-| patronymic  | VARCHAR(100) | Нет          | Отчество пользователя                                                |
-| email       | VARCHAR(255) | Да           | Почта для связи и отправки оффера                                    |
-| phone       | VARCHAR(50)  | Да           | Контактный телефон                                                   |
-| telegram    | VARCHAR(100) | Да           | Ник в Telegram                                                       |
-| experience  | TEXT         | Нет          | Описание опыта / бэкграунда                                          |
-| test_result | VARCHAR(255) | Нет          | Ссылка на тестовое задание                                           |
-| status      | VARCHAR(50)  | Да           | Статус (NEW, IN_REVIEW, ACCEPTED, REJECTED, IGNORED, LOST, ARCHIVED) |
-| manager_id  | UUID         | Нет          | Ответственный менеджер (FK к User)                                   |
-| created_at  | TIMESTAMP    | Да           | Дата поступления заявки, auto                                        |
-| updated_at  | TIMESTAMP    | Да           | Дата онбовления заявки, auto                                         |
+| Поле              | Тип        | Обязательное | Описание                                                                                                     |
+| ----------------- | ---------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| id                | INTEGER    | Да           | Уникальный идентификатор (PK)                                                                                |
+| converted_user_id | INTEGER    | Нет          | Уник-й идент-р, который появляется в момент конвертации лида в пользователя системы (при статусе `ACCEPTED`) |
+| first_name        | TEXT       | Да           | Имя кандидата                                                                                                |
+| last_name         | TEXT       | Да           | Фамилия кандидата                                                                                            |
+| patronymic        | TEXT       | Нет          | Отчество пользователя                                                                                        |
+| email             | TEXT       | Да           | Почта для связи и отправки оффера                                                                            |
+| phone             | TEXT       | Да           | Контактный телефон                                                                                           |
+| telegram          | TEXT       | Да           | Ник в Telegram                                                                                               |
+| experience        | TEXT       | Нет          | Описание опыта / бэкграунда                                                                                  |
+| test_result       | TEXT       | Нет          | Ссылка на тестовое задание                                                                                   |
+| status            | LeadStatus | Да           | Статус (NEW, IN_REVIEW, ACCEPTED, REJECTED, IGNORED, LOST, ARCHIVED)                                         |
+| manager_id        | INTEGER    | Нет          | Ответственный менеджер (FK к ManagerProfile)                                                                 |
+| created_at        | TIMESTAMP  | Да           | Дата поступления заявки, auto                                                                                |
+| updated_at        | TIMESTAMP  | Да           | Дата онбовления заявки, auto                                                                                 |
 
-### Связи 
-* `manager_id` -> ссылается на `User(id)`
+## **ENUM**: LeadStatus
+
+Описание: Статус заявки кандидата в CRM-воронке - от новой заявки до зачисления илил отказа
+
+### Поля
+
+| Поле      |
+| --------- |
+| NEW       |
+| IN_REVIEW |
+| ACCEPTED  |
+| REJECTED  |
+| IGNORED   |
+| LOST      |
+| ARCHIVED  |
 
 ## Notification
 
@@ -221,20 +273,29 @@
 
 ### Поля
 
-| Поле       | Тип         | Обязательное | Описание                                        |
-| ---------- | ----------- | ------------ | ----------------------------------------------- |
-| id         | UUID        | Да           | Уникальный идентификатор (PK)                   |
-| user_id    | UUID        | Да           | Кому адресовано (FK)                            |
-| message    | TEXT        | Да           | Текст уведомления                               |
-| is_silent  | BOOLEAN     | Да           | Отправить без звука, default: false             |
-| send_at    | TIMESTAMP   | Нет          | Время отложенной отправки (null = сразу)        |
-| status     | VARCHAR(50) | Да           | Статус доставки (PENDING, SENT, FAILED)         |
-| is_read    | BOOLEAN     | Да           | Статус прочтения внутри системы, default: false |
-| created_at | TIMESTAMP   | Да           | Дата создания записи, auto                      |
-| updated_at | TIMESTAMP   | Да           | Дата изменения записи, auto                     |
+| Поле       | Тип                | Обязательное | Описание                                        |
+| ---------- | ------------------ | ------------ | ----------------------------------------------- |
+| id         | INTEGER            | Да           | Уникальный идентификатор (PK)                   |
+| user_id    | INTEGER            | Да           | Кому адресовано (FK)                            |
+| message    | TEXT               | Да           | Текст уведомления                               |
+| is_silent  | BOOLEAN            | Да           | Отправить без звука, default: false             |
+| send_at    | TIMESTAMP          | Нет          | Время отложенной отправки (null = сразу)        |
+| status     | NotificationStatus | Да           | Статус доставки (PENDING, SENT, FAILED)         |
+| is_read    | BOOLEAN            | Да           | Статус прочтения внутри системы, default: false |
+| created_at | TIMESTAMP          | Да           | Дата создания записи, auto                      |
+| updated_at | TIMESTAMP          | Да           | Дата изменения записи, auto                     |
 
-### Связи 
-* `user_id` -> ссылается на `User(id)`
+## **ENUM**: NotificationStatus
+
+Описание: Статус доставки системного уведомления пользователю.
+
+### Поля
+
+| Поле    |
+| ------- |
+| PENDING |
+| SENT    |
+| FAILED  |
 
 ## Вопросы для самопроверки
 
